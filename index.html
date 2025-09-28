@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .payment-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .payment-method {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method:hover {
+            border-color: #6a11cb;
+        }
+        
+        .payment-method.active {
+            border-color: #6a11cb;
+            background-color: rgba(106, 17, 203, 0.05);
+        }
+        
+        .payment-method img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        
+        .payment-details {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .payment-details.active {
+            display: block;
+        }
+        
+        .qris-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .qris-container img {
+            max-width: 250px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .nomor-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .nomor-container p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .nomor-container .nomor {
+            font-size: 1.5rem;
+            color: #6a11cb;
+            font-weight: 700;
+        }
+        
+        .copy-btn {
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .fee-info {
+            background-color: #fff9e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .fee-info h3 {
+            margin-bottom: 10px;
+            color: #e65100;
+        }
+        
+        .fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .fee-table th, .fee-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .fee-table th {
+            background-color: #f5f5f5;
+        }
+        
+        .note {
+            background-color: #ffebee;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f44336;
+        }
+        
+        .note h3 {
+            margin-bottom: 10px;
+            color: #c62828;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .payment-methods {
+                flex-direction: column;
+            }
+            
+            .payment-method {
+                min-width: 100%;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .payment-form, .payment-details {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Payment Gateway</h1>
+            <p>Lakukan pembayaran dengan mudah dan aman</p>
+        </header>
+        
+        <div class="payment-form">
+            <div class="form-group">
+                <label for="amount">Jumlah Pembayaran (Rp)</label>
+                <input type="number" id="amount" placeholder="Masukkan jumlah pembayaran" min="1">
+            </div>
+            
+            <div class="form-group">
+                <label>Metode Pembayaran</label>
+                <div class="payment-methods">
+                    <div class="payment-method" data-method="dana">
+                        <div>DANA</div>
+                    </div>
+                    <div class="payment-method" data-method="gopay">
+                        <div>GoPay</div>
+                    </div>
+                    <div class="payment-method" data-method="qris">
+                        <div>QRIS</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="pay-button">Lanjutkan Pembayaran</button>
+        </div>
+        
+        <div class="payment-details" id="dana-details">
+            <h2>Pembayaran via DANA</h2>
+            <p>Silakan transfer ke nomor DANA berikut:</p>
+            
+            <div class="nomor-container">
+                <p>Nomor DANA</p>
+                <div class="nomor">082174301182</div>
+                <button class="copy-btn" data-nomor="082174301182">Salin Nomor</button>
+            </div>
+            
+            <p>Setelah melakukan transfer, silakan konfirmasi dengan mengirim bukti transfer.</p>
+        </div>
+        
+        <div class="payment-details" id="gopay-details">
+            <h2>Pembayaran via GoPay</h2>
+            <p>Silakan transfer ke nomor GoPay berikut:</p>
+            
+            <div class="nomor-container">
+                <p>Nomor GoPay</p>
+                <div class="nomor">082174301182</div>
+                <button class="copy-btn" data-nomor="082174301182">Salin Nomor</button>
+            </div>
+            
+            <p>Setelah melakukan transfer, silakan konfirmasi dengan mengirim bukti transfer.</p>
+        </div>
+        
+        <div class="payment-details" id="qris-details">
+            <h2>Pembayaran via QRIS</h2>
+            <p>Silakan scan QR code berikut untuk melakukan pembayaran:</p>
+            
+            <div class="qris-container">
+                <img src="https://files.catbox.moe/ds16lf.jpeg" alt="QRIS Code">
+            </div>
+            
+            <p>Setelah melakukan pembayaran, silakan konfirmasi dengan mengirim bukti transfer.</p>
+        </div>
+        
+        <div class="fee-info">
+            <h3>Biaya Layanan (Fee)</h3>
+            <table class="fee-table">
+                <thead>
+                    <tr>
+                        <th>Nominal Transaksi</th>
+                        <th>Biaya Layanan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rp 1.000 - Rp 100.000</td>
+                        <td>Rp 1.000</td>
+                    </tr>
+                    <tr>
+                        <td>Rp 101.000 - Rp 150.000</td>
+                        <td>Rp 2.000</td>
+                    </tr>
+                    <tr>
+                        <td>Rp 151.000 - Rp 250.000</td>
+                        <td>Rp 3.000</td>
+                    </tr>
+                    <tr>
+                        <td>Rp 251.000 - Rp 400.000</td>
+                        <td>Rp 4.000</td>
+                    </tr>
+                    <tr>
+                        <td>Rp 401.000 - Rp 500.000</td>
+                        <td>Rp 5.000</td>
+                    </tr>
+                    <tr>
+                        <td>Rp 501.000 - Rp 900.000</td>
+                        <td>Rp 6.000</td>
+                    </tr>
+                    <tr>
+                        <td>Rp 901.000 - Rp 1.000.000</td>
+                        <td>Rp 15.000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="note">
+            <h3>Catatan Penting</h3>
+            <p>Jika transaksi dibatalkan, biaya layanan tetap akan dipotong.</p>
+        </div>
+        
+        <footer>
+            <p>&copy; 2023 Payment Gateway. Semua hak dilindungi.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const payButton = document.getElementById('pay-button');
+            const amountInput = document.getElementById('amount');
+            let selectedMethod = null;
+            
+            // Pilih metode pembayaran
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    paymentMethods.forEach(m => m.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedMethod = this.getAttribute('data-method');
+                });
+            });
+            
+            // Tombol pembayaran
+            payButton.addEventListener('click', function() {
+                const amount = parseInt(amountInput.value);
+                
+                if (!amount || amount <= 0) {
+                    alert('Masukkan jumlah pembayaran yang valid!');
+                    return;
+                }
+                
+                if (!selectedMethod) {
+                    alert('Pilih metode pembayaran terlebih dahulu!');
+                    return;
+                }
+                
+                // Sembunyikan semua detail pembayaran
+                document.querySelectorAll('.payment-details').forEach(detail => {
+                    detail.classList.remove('active');
+                });
+                
+                // Tampilkan detail pembayaran yang dipilih
+                document.getElementById(`${selectedMethod}-details`).classList.add('active');
+                
+                // Scroll ke detail pembayaran
+                document.getElementById(`${selectedMethod}-details`).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Tombol salin nomor
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const nomor = this.getAttribute('data-nomor');
+                    navigator.clipboard.writeText(nomor)
+                        .then(() => {
+                            const originalText = this.textContent;
+                            this.textContent = 'Tersalin!';
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('Gagal menyalin: ', err);
+                        });
+                });
+            });
+            
+            // Hitung biaya berdasarkan nominal
+            amountInput.addEventListener('input', function() {
+                const amount = parseInt(this.value);
+                if (amount) {
+                    let fee = 0;
+                    
+                    if (amount <= 100000) fee = 1000;
+                    else if (amount <= 150000) fee = 2000;
+                    else if (amount <= 250000) fee = 3000;
+                    else if (amount <= 400000) fee = 4000;
+                    else if (amount <= 500000) fee = 5000;
+                    else if (amount <= 900000) fee = 6000;
+                    else if (amount <= 1000000) fee = 15000;
+                    
+                    // Tampilkan peringatan jika nominal melebihi 1 juta
+                    if (amount > 1000000) {
+                        alert('Untuk nominal di atas 1 juta, silakan hubungi admin untuk informasi biaya layanan.');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
